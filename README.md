@@ -1,5 +1,5 @@
 ## DRL_Implementation
-##### Current status: under development
+##### Current status: Forked from development repo
 
 ### Introduction
 - This repository is a pytorch-based implementation of modern DRL algorithms, designed to be reusable for as many 
@@ -17,16 +17,16 @@ cd DRL_Implementation
 python -m pip install -r requirements.txt
 python -m pip install .
 ```
-[Click here for example codes](https://github.com/IanYangChina/DRL_Implementation/tree/master/drl_implementation/examples)
-, to run the codes you will need to install Gym, Pybullet, or pybullet-multigoal-gym. See env installation links below.
+[Click here for example code](https://github.com/IanYangChina/DRL_Implementation/tree/master/drl_implementation/examples)
+, to run the code you will need to install Gym, Pybullet, or pybullet-multigoal-gym. See env installation links below.
 For more use cases, have a look at the [drl_imp_test repo](https://github.com/IanYangChina/drl_imp_test)\
-From the project root, run `python drl_implementation/examples/$SCTIPT_NAME.py`
+From the project root, run `python drl_implementation/examples/$SCRIPT_NAME.py`
 
 ##### State-based
 - [X] DDPG - Deterministic, Continuous
 - [X] TD3 -Deterministic, Continuous
 - [X] SAC (Adaptive Temperature) - Stochastic, Continuous
-- [ ] D4PG - Deterministic, Continuous ***-only work for torch 1.4.0, fix it later-***
+- [ ] D4PG - Deterministic, Continuous ***-only works for torch 1.4.0, fix it later-***
 
 ##### Image-based
 - [ ] DQN - Deterministic, Discrete (LSTM network for Atari) ***-debugging-***
