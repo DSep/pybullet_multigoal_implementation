@@ -2,7 +2,7 @@ import os
 import torch as T
 import numpy as np
 import json
-from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard.writer import SummaryWriter
 from .utils.plot import smoothed_plot
 from .utils.replay_buffer import make_buffer
 from .utils.normalizer import Normalizer
@@ -44,6 +44,8 @@ class Agent(object):
         self.device = T.device("cuda" if T.cuda.is_available() else "cpu")
         if 'cuda_device_id' in algo_params.keys():
             self.device = T.device("cuda:%i" % algo_params['cuda_device_id'])
+        elif 'cuda_device_full_name' in algo_params.keys():
+            self.device = T.device(algo_params['cuda_device_full_name'])
         # path & seeding
         T.manual_seed(seed)
         T.cuda.manual_seed_all(seed)  # this has no effect if cuda is not available
