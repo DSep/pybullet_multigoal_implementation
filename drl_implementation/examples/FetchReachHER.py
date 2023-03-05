@@ -1,6 +1,8 @@
 import os
 import plot
 import pybullet_multigoal_gym as pmg
+from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
+    KukaTipOverEnv
 # import gym
 from drl_implementation import GoalConditionedDDPG
 algo_params = {
@@ -18,7 +20,7 @@ algo_params = {
     'discount_factor': 0.98,
     'clip_value': 50,
     'discard_time_limit': True,
-    'terminate_on_achieve': False,
+    'terminate_on_achieve': True,
     'observation_normalization': True,
 
     'random_action_chance': 0.2,
@@ -27,7 +29,7 @@ algo_params = {
     'training_epochs': 11,
     'training_cycles': 50,
     'training_episodes': 16,
-    'testing_gap': 1,
+    'testing_gap': 10,
     'testing_episodes': 30,
     'saving_gap': 10,
 
@@ -43,7 +45,7 @@ path = os.path.join(path, 'Reach_HER')
 for seed in seeds:
 
     # env = gym.make("FetchReach-v1")
-    env = pmg.make_env(task='tip_over',
+    env: KukaTipOverEnv = pmg.make_env(task='tip_over',
                     gripper='parallel_jaw',
                     render=True,
                     binary_reward=True,
@@ -56,6 +58,7 @@ for seed in seeds:
                     camera_setup=None,
                     observation_cam_id=[0],
                     goal_cam_id=0,
+                    target_range=0.3,
                     )
     seed_path = path + '/seed'+str(seed)
 

@@ -98,6 +98,7 @@ class GoalConditionedDDPG(Agent):
                     cycle_return += ep_return
                     if ep_return > -self.env._max_episode_steps:
                         cycle_success += 1
+                        # TODO Break early if successful?
 
                 self.statistic_dict['cycle_return'].append(cycle_return / self.training_episodes)
                 self.statistic_dict['cycle_success_rate'].append(cycle_success / self.training_episodes)
@@ -197,6 +198,7 @@ class GoalConditionedDDPG(Agent):
                 weights = T.ones(size=(self.batch_size, 1)).to(self.device)
                 inds = None
 
+            # TODO First convert to torch tensor, then concat
             actor_inputs = np.concatenate((batch.state, batch.desired_goal), axis=1)
             actor_inputs = self.normalizer(actor_inputs)
             actor_inputs = T.as_tensor(actor_inputs, dtype=T.float32, device=self.device)
