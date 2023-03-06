@@ -59,12 +59,13 @@ for seed in seeds:
                     observation_cam_id=[0],
                     goal_cam_id=0,
                     target_range=0.3,
-                    plane_position = [0.,0.,-0.5]
+                    plane_position = [0.,0.,-0.5],
+                    has_spring = True
                     )
     seed_path = path + '/seed'+str(seed)
 
     agent = GoalConditionedDDPG(algo_params=algo_params, env=env, path=seed_path, seed=seed)
-    agent.run(test=False)
+    agent.run(test=False, sleep=0.0)
     # agent.run(test=True, load_network_ep=100, sleep=0.05)
     seed_returns.append(agent.statistic_dict['epoch_test_return'])
     seed_success_rates.append(agent.statistic_dict['epoch_test_success_rate'])
