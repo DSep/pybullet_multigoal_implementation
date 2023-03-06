@@ -68,7 +68,8 @@ for seed in seeds:
     agent = GoalConditionedDDPG(algo_params=algo_params, env=env, path=seed_path, seed=seed)
     agent.run(test=False)
     # agent.run(test=True, load_network_ep=10, sleep=0.05)
-    # agent.run(test=False, load_network_ep=5)
+    # BUG if you are loading to continue training, the data (not weights) are only from the last epoch you saved!
+    # agent.run(test=False, load_network_ep=1)
     seed_returns.append(agent.statistic_dict['epoch_test_return'])
     seed_success_rates.append(agent.statistic_dict['epoch_test_success_rate'])
     del env, agent
