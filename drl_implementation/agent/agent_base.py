@@ -218,11 +218,15 @@ class Agent(object):
             if len(self.statistic_dict[key]) == 0:
                 continue
             # convert everything to a list before save via json
-            if T.is_tensor(self.statistic_dict[key][0]):
-                self.statistic_dict[key] = T.as_tensor(self.statistic_dict[key], device=self.device).cpu().numpy().tolist()
+            if any(T.is_tensor(el) for el in self.statistic_dict[key]):
+                self.statistic_dict[key] = T.as_tensor(self.statistic_dict[key], device=self.device).detach().cpu().numpy().tolist()
             else:
                 self.statistic_dict[key] = np.array(self.statistic_dict[key]).tolist()
-            json.dump(self.statistic_dict[key], open(os.path.join(self.data_path, key+'.json'), 'w'))
+            try:
+                json.dump(self.statistic_dict[key], open(os.path.join(self.data_path, key+'.json'), 'w'))
+            except TypeError as e:
+                print("The data still has tensors, causing a problem...", any(T.is_tensor(el) for el in self.statistic_dict[key]))
+                raise e
     
     def _plot_statistics(self, keys=None, x_labels=None, y_labels=None, window=5, save_to_file=True):
         if save_to_file:

@@ -8,7 +8,7 @@ from drl_implementation import GoalConditionedDDPG
 algo_params = {
     'hindsight': True,
     'her_sampling_strategy': 'future',
-    'prioritised': False,
+    'prioritised': False, # choose what type of HER buffer (see PrioritisedHindsightReplayBuffer)
     'memory_capacity': int(1e6),
     'actor_learning_rate': 0.001,
     'critic_learning_rate': 0.001,
@@ -31,12 +31,12 @@ algo_params = {
     'training_episodes': 16,
     'testing_gap': 10,
     'testing_episodes': 30,
-    'saving_gap': 10,
+    'saving_gap': 1,
 
     # 'cuda_device_id': 0 disable cuda usage
     # 'cuda_device_full_name': 'mps'
 }
-seeds = [11, 22, 33, 44]
+seeds = [11] #, 22, 33, 44]
 seed_returns = []
 seed_success_rates = []
 path = os.path.dirname(os.path.realpath(__file__))
@@ -48,7 +48,7 @@ for seed in seeds:
     env: KukaTipOverEnv = pmg.make_env(task='tip_over',
                     gripper='parallel_jaw',
                     render=True,
-                    binary_reward=True,
+                    binary_reward=False, # Switch to true for stable reward
                     joint_control=True,
                     max_episode_steps=50,
                     image_observation=False,
@@ -60,13 +60,17 @@ for seed in seeds:
                     goal_cam_id=0,
                     target_range=0.3,
                     plane_position = [0.,0.,-0.5],
-                    has_spring = True
+                    has_spring = True,
+                    tip_penalty=-20.0,
+                    force_angle_reward_factor=0.5,
                     )
     seed_path = path + '/seed'+str(seed)
 
     agent = GoalConditionedDDPG(algo_params=algo_params, env=env, path=seed_path, seed=seed)
-    agent.run(test=False, sleep=0.0)
-    # agent.run(test=True, load_network_ep=100, sleep=0.05)
+    agent.run(test=False)
+    # agent.run(test=True, load_network_ep=10, sleep=0.05)
+    # BUG if you are loading to continue training, the data (not weights) are only from the last epoch you saved!
+    # agent.run(test=False, load_network_ep=1)
     seed_returns.append(agent.statistic_dict['epoch_test_return'])
     seed_success_rates.append(agent.statistic_dict['epoch_test_success_rate'])
     del env, agent

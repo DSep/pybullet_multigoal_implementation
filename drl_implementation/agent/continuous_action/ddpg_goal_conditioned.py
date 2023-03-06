@@ -79,10 +79,10 @@ class GoalConditionedDDPG(Agent):
     def run(self, test=False, render=False, load_network_ep=None, sleep=0):
         # training setup uses a hierarchy of Epoch, Cycle and Episode
         #   following the HER paper: https://papers.nips.cc/paper/2017/hash/453fadbd8a1a3af50a9df4df899537b5-Abstract.html
+        if load_network_ep is not None:
+            print("Loading network parameters...")
+            self._load_network(ep=load_network_ep)
         if test:
-            if load_network_ep is not None:
-                print("Loading network parameters...")
-                self._load_network(ep=load_network_ep)
             print("Start testing...")
         else:
             print("Start training...")
@@ -106,10 +106,10 @@ class GoalConditionedDDPG(Agent):
                       "avg. return %0.1f" % (cycle_return / self.training_episodes),
                       "success rate %0.1f" % (cycle_success / self.training_episodes))
 
+            # testing during training
             if (epo % self.testing_gap == 0) and (epo != 0) and (not test):
                 if self.curriculum:
                     self.env.deactivate_curriculum_update()
-                # testing during training
                 test_return = 0
                 test_success = 0
                 for test_ep in range(self.testing_episodes):
@@ -122,7 +122,8 @@ class GoalConditionedDDPG(Agent):
                 print("Epoch %i" % epo, "test avg. return %0.1f" % (test_return / self.testing_episodes))
 
             if (epo % self.saving_gap == 0) and (epo != 0) and (not test):
-                self._save_network(ep=epo)
+                self._save_network(ep=epo) # NOTE This can be moved into step loop for more specific checkpoints
+                self._save_statistics()
 
         if not test:
             print("Finished training")
@@ -198,11 +199,10 @@ class GoalConditionedDDPG(Agent):
                 weights = T.ones(size=(self.batch_size, 1)).to(self.device)
                 inds = None
 
-            # TODO First convert to torch tensor, then concat
             actor_inputs = np.concatenate((batch.state, batch.desired_goal), axis=1)
             actor_inputs = self.normalizer(actor_inputs)
             actor_inputs = T.as_tensor(actor_inputs, dtype=T.float32, device=self.device)
-            actions = T.as_tensor(batch.action, dtype=T.float32, device=self.device)
+            actions =  T.as_tensor(np.array(batch.action), dtype=T.float32, device=self.device)
             critic_inputs = T.cat((actor_inputs, actions), dim=1)
             actor_inputs_ = np.concatenate((batch.next_state, batch.desired_goal), axis=1)
             actor_inputs_ = self.normalizer(actor_inputs_)
