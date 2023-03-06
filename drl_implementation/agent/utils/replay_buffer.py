@@ -95,6 +95,7 @@ class EpisodeWiseReplayBuffer(object):
         self.ep_position = -1
 
     def sample(self, batch_size):
+        """Take a sample from the replay buffer of size `batch_size`"""
         batch = R.sample(self.memory, batch_size)
         return self.Transition(*zip(*batch))
 
