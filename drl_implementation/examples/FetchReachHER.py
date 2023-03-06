@@ -59,6 +59,7 @@ for seed in seeds:
                     observation_cam_id=[0],
                     goal_cam_id=0,
                     target_range=0.3,
+                    plane_position = [0.,0.,-0.5]
                     )
     seed_path = path + '/seed'+str(seed)
 
