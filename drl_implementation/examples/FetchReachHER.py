@@ -59,8 +59,8 @@ for seed in seeds:
                     observation_cam_id=[0],
                     goal_cam_id=0,
                     target_range=0.3,
-                    plane_position = [0.,0.,-0.38], # with spring
-                    # plane_position = [0.,0.,-0.58], # without spring
+                    # plane_position = [0.,0.,-0.38], # with spring
+                    plane_position = [0.,0.,-0.58], # without spring
                     has_spring = True,
                     tip_penalty=-20.0,
                     force_angle_reward_factor=0.5,
