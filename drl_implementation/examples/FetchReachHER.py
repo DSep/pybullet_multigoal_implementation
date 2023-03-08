@@ -59,8 +59,7 @@ for seed in seeds:
                     observation_cam_id=[0],
                     goal_cam_id=0,
                     target_range=0.3,
-                    plane_position = [0.,0.,-0.5],
-                    has_spring = True,
+                    plane_position = [0.,0.,-0.58],
                     tip_penalty=-20.0,
                     force_angle_reward_factor=0.5,
                     )
