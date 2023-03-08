@@ -25,6 +25,7 @@ algo_params = {
 
     'random_action_chance': 0.2,
     'noise_deviation': 0.05,
+    'action_noise_std' : 0.05,
 
     'training_epochs': 11,
     'training_cycles': 50,

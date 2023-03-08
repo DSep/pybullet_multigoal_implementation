@@ -1,5 +1,6 @@
 import time
 import numpy as np
+from pybullet_multigoal_gym.utils.noise_generation import add_noise
 import torch as T
 import torch.nn.functional as F
 from torch.optim.adam import Adam
@@ -66,6 +67,9 @@ class GoalConditionedDDPG(Agent):
                                                     chance=algo_params['random_action_chance'],
                                                     sigma=algo_params['noise_deviation'], rng=self.rng)
         self.noise_deviation = algo_params['noise_deviation']
+
+        # noise action std
+        self.action_noise_std = algo_params['action_noise_std']
         # training args
         self.clip_value = algo_params['clip_value']
         # statistic dict
@@ -149,6 +153,10 @@ class GoalConditionedDDPG(Agent):
             if render:
                 self.env.render()
             action = self._select_action(obs, test=test)
+            # add noise to action
+            if self.action_noise_std>0.0:
+                action = add_noise(action, self.action_noise_std)
+                action = np.clip(action, -1.0, 1.0)
             new_obs, reward, done, info = self.env.step(action)
             time.sleep(sleep)
             ep_return += reward
