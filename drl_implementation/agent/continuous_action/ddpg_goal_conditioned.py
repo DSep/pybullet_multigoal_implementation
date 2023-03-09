@@ -107,7 +107,8 @@ class GoalConditionedDDPG(Agent):
                 
                 self.statistic_dict['cycle_return'].append(cycle_return / self.training_episodes)
                 self.statistic_dict['cycle_success_rate'].append(cycle_success / self.training_episodes)
-                wandb.log({x: y[-1] for x,y in self.statistic_dict.items() if len(y) > 0})
+                if wandb.run:
+                    wandb.log({x: y[-1] for x,y in self.statistic_dict.items() if len(y) > 0})
                 print("Epoch %i" % epo, "Cycle %i" % cyc,
                       "avg. return %0.1f" % (cycle_return / self.training_episodes),
                       "success rate %0.1f" % (cycle_success / self.training_episodes))
