@@ -7,6 +7,7 @@ from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
 # import gym
 from drl_implementation import GoalConditionedDDPG
 from seer.evaluation_tools.rl_configs import *
+import wandb
 
 
 def main():
@@ -33,13 +34,23 @@ def main():
 
         return_statistic = plot.get_mean_and_deviation(seed_returns, save_data=True,
                                                     file_name=os.path.join(path, 'return_statistic.json'))
-        plot.smoothed_plot_mean_deviation(path + '/returns', return_statistic, x_label='Epoch', y_label='Average returns')
+        if wandb.run:
+            for key in return_statistic:
+                wandb.log({
+                    'return_statistic_' + key: return_statistic[key],
+                })
+        plot.smoothed_plot_mean_deviation(path + '/returns', return_statistic, x_label='Epoch', y_label='Average returns', key='Average_returns')
 
 
         success_rate_statistic = plot.get_mean_and_deviation(seed_success_rates, save_data=True,
                                                             file_name=os.path.join(path, 'success_rate_statistic.json'))
+        if wandb.run:
+            for key in success_rate_statistic:
+                wandb.log({
+                    'success_rate_statistic_' + key: success_rate_statistic[key],
+                })
         plot.smoothed_plot_mean_deviation(path + '/success_rates', success_rate_statistic,
-                                        x_label='Epoch', y_label='Success rates')
+                                        x_label='Epoch', y_label='Success rates', key='Success_rates')
 
 
 if __name__ == '__main__':

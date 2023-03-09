@@ -26,18 +26,20 @@ def smoothed_plot(file, data, x_label="Timesteps", y_label="Success rate", windo
         wandb.log({
             key + '_plot': fig,
         })
-    plt.savefig(file, bbox_inches='tight', dpi=500)
+    fig.savefig(file, bbox_inches='tight', dpi=500)
+    fig.clear()
     plt.close()
 
 
 def smoothed_plot_multi_line(file, data,
                              legend=None, legend_loc="upper right",
-                             x_label='Timesteps', y_label="Success rate", window=5):
-    plt.ylabel(y_label)
-    plt.xlabel(x_label)
+                             x_label='Timesteps', y_label="Success rate", window=5, key=''):
+    fig, ax = plt.subplots()
+    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label)
     if x_label == "Epoch":
         x_tick_interval = len(data[0]) // 10
-        plt.xticks([n * x_tick_interval for n in range(11)])
+        ax.set_xticks([n * x_tick_interval for n in range(11)])
 
     for t in range(len(data)):
         N = len(data[t])
@@ -49,14 +51,17 @@ def smoothed_plot_multi_line(file, data,
         else:
             running_avg = data[t]
 
-        plt.plot(x, running_avg)
+        ax.set_xticks(x, running_avg)
 
     if legend is None:
         legend = [str(n) for n in range(len(data))]
-    plt.legend(legend, loc=legend_loc)
-    # if wandb.run:
-    #     wandb.log(fig) # TODO
-    plt.savefig(file, bbox_inches='tight', dpi=500)
+    ax.legend(legend, loc=legend_loc)
+    if wandb.run:
+        wandb.log({
+            key + '_plot': fig,
+        })
+    fig.savefig(file, bbox_inches='tight', dpi=500)
+    fig.clear()
     plt.close()
 
 
@@ -66,7 +71,7 @@ def smoothed_plot_mean_deviation(file, data_dict_list, title=None,
                                  y_label="Success rate", window=5, ylim=(None, None), y_axis_off=False,
                                  legend=None, legend_only=False, legend_file=None, legend_loc="upper right",
                                  legend_title=None, legend_bbox_to_anchor=None, legend_ncol=4, legend_frame=False,
-                                 handlelength=2):
+                                 handlelength=2, key=''):
     colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
     if not isinstance(data_dict_list, list):
         data_dict_list = [data_dict_list]
