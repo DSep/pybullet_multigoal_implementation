@@ -6,20 +6,26 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from copy import deepcopy as dcp
+import wandb
 
 
-def smoothed_plot(file, data, x_label="Timesteps", y_label="Success rate", window=5):
+def smoothed_plot(file, data, x_label="Timesteps", y_label="Success rate", window=5, key=''):
     N = len(data)
     running_avg = np.empty(N)
     for t in range(N):
         running_avg[t] = np.mean(data[max(0, t - window):(t + 1)])
     x = [i for i in range(N)]
-    plt.ylabel(y_label)
-    plt.xlabel(x_label)
+    fig, ax = plt.subplots()
+    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label)
     if x_label == "Epoch":
         x_tick_interval = len(data) // 10
         plt.xticks([n * x_tick_interval for n in range(11)])
-    plt.plot(x, running_avg)
+    ax.plot(x, running_avg)
+    if wandb.run:
+        wandb.log({
+            key + '_plot': fig,
+        })
     plt.savefig(file, bbox_inches='tight', dpi=500)
     plt.close()
 
@@ -48,6 +54,8 @@ def smoothed_plot_multi_line(file, data,
     if legend is None:
         legend = [str(n) for n in range(len(data))]
     plt.legend(legend, loc=legend_loc)
+    # if wandb.run:
+    #     wandb.log(fig) # TODO
     plt.savefig(file, bbox_inches='tight', dpi=500)
     plt.close()
 

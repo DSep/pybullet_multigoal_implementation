@@ -6,6 +6,7 @@ from torch.utils.tensorboard.writer import SummaryWriter
 from .utils.plot import smoothed_plot
 from .utils.replay_buffer import make_buffer
 from .utils.normalizer import Normalizer
+import wandb
 
 
 def mkdir(paths):
@@ -217,6 +218,11 @@ class Agent(object):
         for key in keys:
             if len(self.statistic_dict[key]) == 0:
                 continue
+            # log to wandb
+            if wandb.run:
+                wandb.log({
+                    key: self.statistic_dict[key][-1],
+                })
             # convert everything to a list before save via json
             if any(T.is_tensor(el) for el in self.statistic_dict[key]):
                 self.statistic_dict[key] = T.as_tensor(self.statistic_dict[key], device=self.device).detach().cpu().numpy().tolist()
@@ -264,9 +270,9 @@ class Agent(object):
                 if len(self.statistic_dict[key]) == 0:
                     continue
                 smoothed_plot(os.path.join(self.path, key+'.png'), self.statistic_dict[key],
-                              x_label=x_labels[key], y_label=y_labels[key], window=window)
+                              x_label=x_labels[key], y_label=y_labels[key], window=window, key=key)
         else:
             for key in keys:
                 smoothed_plot(os.path.join(self.path, key+'.png'), self.statistic_dict[key],
-                              x_label=x_labels[key], y_label=y_labels[key], window=window)
+                              x_label=x_labels[key], y_label=y_labels[key], window=window, key=key)
 
