@@ -6,11 +6,23 @@ from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
     KukaTipOverEnv
 # import gym
 from drl_implementation import GoalConditionedDDPG
-from seer.evaluation_tools.rl_configs import *
+from seer.evaluation_tools.rl_configs import run_params, env_params, algo_params, SEEDS, PATH, IS_TEST, LOAD_NETWORK_EP, SLEEP
+from seer.evaluation_tools.rl_configs import wandb_config as rl_wandb_config
+import argparse
 import wandb
 
 
-def main():
+def main(use_wandb=True):
+    if use_wandb:
+        # start a new wandb run to track this script
+        wandb.init(
+            # set the wandb project where this run will be logged
+            project='seer',
+            entity='general-team',
+            
+            # track hyperparameters and run metadata
+            config=rl_wandb_config
+        )
     seeds = run_params[SEEDS] #
     seed_returns = []
     seed_success_rates = []
@@ -51,7 +63,13 @@ def main():
                 })
         plot.smoothed_plot_mean_deviation(path + '/success_rates', success_rate_statistic,
                                         x_label='Epoch', y_label='Success rates', key='Success_rates')
+        if wandb.run:
+            wandb.finish()
 
 
 if __name__ == '__main__':
-    main()
+    # Parse argument to know if we want to use wandb
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--use_wandb', action='store_true')
+    parser = parser.parse_args()
+    main(parser.use_wandb)
