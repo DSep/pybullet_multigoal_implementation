@@ -7,7 +7,7 @@ from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
 # import gym
 from drl_implementation import GoalConditionedDDPG
 from seer.evaluation_tools.constants import *
-import seer.evaluation_tools.rl_config_eval_basic
+import seer.evaluation_tools.rl_config_eval_basic as config
 from seer.evaluation_tools.rl_config_eval_basic import run_params, env_params, algo_params
 from seer.evaluation_tools.rl_config_eval_basic import wandb_config as rl_wandb_config
 import argparse
@@ -29,7 +29,7 @@ def main(use_wandb=True):
                 project='seer',
                 entity='general-team',
                 reinit=True,
-                name=str(Path(seer.evaluation_tools.rl_config_eval_basic.__file__).stem) + '_' + str(seed),
+                name=str(Path(config.__file__).stem) + '_' + str(seed),
                 
                 # track hyperparameters and run metadata
                 config=rl_wandb_config
