@@ -7,8 +7,8 @@ from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
 # import gym
 from drl_implementation import GoalConditionedDDPG
 from seer.evaluation_tools.constants import *
-from seer.evaluation_tools.rl_config_eval_noisy_spring import run_params, env_params, algo_params
-from seer.evaluation_tools.rl_config_eval_noisy_spring import wandb_config as rl_wandb_config
+from seer.evaluation_tools.rl_config_eval_basic import run_params, env_params, algo_params
+from seer.evaluation_tools.rl_config_eval_basic import wandb_config as rl_wandb_config
 import argparse
 import wandb
 

@@ -101,15 +101,15 @@ class GoalConditionedDDPG(Agent):
                 cycle_success = 0
                 for ep in range(self.training_episodes):
                     ep_return = self._interact(render, test, sleep=sleep)
-                    if wandb.run:
-                        wandb.log({
-                            'episode_return': ep_return,
-                            'num_successful_episodes': num_successful_episodes,
-                        })
                     cycle_return += ep_return
                     if ep_return > -self.env._max_episode_steps: # FIXME in the case of sparse reward, this is not correct
                         cycle_success += 1
                         # TODO Break early if successful?
+                    if wandb.run:
+                        wandb.log({
+                            'episode_return': ep_return,
+                            'num_successful_episodes': cycle_success,
+                        })
                 
                 self.statistic_dict['cycle_return'].append(cycle_return / self.training_episodes)
                 self.statistic_dict['cycle_success_rate'].append(cycle_success / self.training_episodes)
