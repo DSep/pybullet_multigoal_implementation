@@ -13,7 +13,7 @@ from seer.evaluation_tools.rl_config_eval_basic import wandb_config as rl_wandb_
 import argparse
 import wandb
 
-
+from pathlib import Path
 def main(use_wandb=True):
     seeds = [11]
     seed_returns = []
@@ -29,7 +29,7 @@ def main(use_wandb=True):
                 project='seer',
                 entity='general-team',
                 reinit=True,
-                # name=os.path.realpath(rl_config_eval_basic.__file__) + '_' + str(seed),
+                name=str(Path(seer.evaluation_tools.rl_config_eval_basic.__file__).stem) + '_' + str(seed),
                 
                 # track hyperparameters and run metadata
                 config=rl_wandb_config

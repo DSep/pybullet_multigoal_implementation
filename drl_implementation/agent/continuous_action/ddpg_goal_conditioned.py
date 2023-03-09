@@ -140,7 +140,8 @@ class GoalConditionedDDPG(Agent):
 
             if (epo % self.saving_gap == 0) and (epo != 0) and (not test):
                 self._save_network(ep=epo) # NOTE This can be moved into step loop for more specific checkpoints
-                self._save_statistics()
+            
+            self._save_statistics()
 
         if not test:
             print("Finished training")
