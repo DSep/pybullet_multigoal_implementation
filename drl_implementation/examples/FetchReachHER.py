@@ -26,6 +26,11 @@ algo_params = {
     'random_action_chance': 0.2,
     'noise_deviation': 0.05,
     'action_noise_std' : 0.05,
+    'observation_noise_std' : { 'pos' : 0.00, 
+                                'vel' : 0.00,
+                                'tor' : 0.00,
+                                'com' : 0.00,
+                                },
 
     'training_epochs': 11,
     'training_cycles': 50,
@@ -63,8 +68,10 @@ for seed in seeds:
                     # plane_position = [0.,0.,-0.38], # with spring
                     plane_position = [0.,0.,-0.58], # without spring
                     has_spring = True,
+                    joint_force_sensors=True,
                     tip_penalty=-20.0,
                     force_angle_reward_factor=0.5,
+                    noise_stds = algo_params['observation_noise_std']
                     )
     seed_path = path + '/seed'+str(seed)
 
