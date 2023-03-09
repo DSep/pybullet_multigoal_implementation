@@ -92,6 +92,7 @@ class GoalConditionedDDPG(Agent):
         else:
             print("Start training...")
 
+        num_successful_episodes = 0
         for epo in range(self.training_epochs):
             if self.curriculum:
                 self.env.activate_curriculum_update()
@@ -100,8 +101,13 @@ class GoalConditionedDDPG(Agent):
                 cycle_success = 0
                 for ep in range(self.training_episodes):
                     ep_return = self._interact(render, test, sleep=sleep)
+                    if wandb.run:
+                        wandb.log({
+                            'episode_return': ep_return,
+                            'num_successful_episodes': num_successful_episodes,
+                        })
                     cycle_return += ep_return
-                    if ep_return > -self.env._max_episode_steps: # FIXME ? is this condition correct
+                    if ep_return > -self.env._max_episode_steps: # FIXME in the case of sparse reward, this is not correct
                         cycle_success += 1
                         # TODO Break early if successful?
                 
