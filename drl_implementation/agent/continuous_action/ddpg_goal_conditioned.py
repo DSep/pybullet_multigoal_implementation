@@ -7,6 +7,7 @@ from torch.optim.adam import Adam
 from ..utils.networks_mlp import Actor, Critic
 from ..agent_base import Agent
 from ..utils.exploration_strategy import EGreedyGaussian
+import wandb
 
 
 class GoalConditionedDDPG(Agent):
@@ -100,12 +101,13 @@ class GoalConditionedDDPG(Agent):
                 for ep in range(self.training_episodes):
                     ep_return = self._interact(render, test, sleep=sleep)
                     cycle_return += ep_return
-                    if ep_return > -self.env._max_episode_steps:
+                    if ep_return > -self.env._max_episode_steps: # FIXME ? is this condition correct
                         cycle_success += 1
                         # TODO Break early if successful?
-
+                
                 self.statistic_dict['cycle_return'].append(cycle_return / self.training_episodes)
                 self.statistic_dict['cycle_success_rate'].append(cycle_success / self.training_episodes)
+                wandb.log({x: y[-1] for x,y in self.statistic_dict.items() if len(y) > 0})
                 print("Epoch %i" % epo, "Cycle %i" % cyc,
                       "avg. return %0.1f" % (cycle_return / self.training_episodes),
                       "success rate %0.1f" % (cycle_success / self.training_episodes))
