@@ -6,10 +6,10 @@ from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
     KukaTipOverEnv
 # import gym
 from drl_implementation import GoalConditionedDDPG
-from seer.evaluation_tools.constants import *
-import seer.evaluation_tools.rl_config_eval_basic as config
-from seer.evaluation_tools.rl_config_eval_basic import run_params, env_params, algo_params
-from seer.evaluation_tools.rl_config_eval_basic import wandb_config as rl_wandb_config
+from seer.train_and_eval_configs.constants import *
+import seer.train_and_eval_configs.rl_eval.rl_config_eval_basic as config
+from seer.train_and_eval_configs.rl_eval.rl_config_eval_basic import run_params, env_params, algo_params
+from seer.train_and_eval_configs.rl_eval.rl_config_eval_basic import wandb_config as rl_wandb_config
 import argparse
 import wandb
 
@@ -79,6 +79,6 @@ def main(use_wandb=True):
 if __name__ == '__main__':
     # Parse argument to know if we want to use wandb
     parser = argparse.ArgumentParser()
-    parser.add_argument('--use_wandb', action='store_true')
+    parser.add_argument('--use_wandb', default=True, action='store_false', help='Flag to enable or disable wandb. Default: True.')
     parser = parser.parse_args()
     main(parser.use_wandb)
