@@ -22,11 +22,12 @@ def smoothed_plot(file, data, x_label="Timesteps", y_label="Success rate", windo
         x_tick_interval = len(data) // 10
         plt.xticks([n * x_tick_interval for n in range(11)])
     ax.plot(x, running_avg)
-    if wandb.run:
-        wandb.log({
-            key + '_plot': fig,
-        })
     fig.savefig(file, bbox_inches='tight', dpi=500)
+        # if wandb.run:
+    #     wandb.log({
+    #         key + '_plot': fig,
+    #     })
+    return fig
     fig.clear()
     plt.close()
 
@@ -56,11 +57,12 @@ def smoothed_plot_multi_line(file, data,
     if legend is None:
         legend = [str(n) for n in range(len(data))]
     ax.legend(legend, loc=legend_loc)
-    if wandb.run:
-        wandb.log({
-            key + '_plot': fig,
-        })
     fig.savefig(file, bbox_inches='tight', dpi=500)
+    # if wandb.run:
+    #     wandb.log({
+    #         key + '_plot': fig,
+    #     })
+    return fig
     fig.clear()
     plt.close()
 

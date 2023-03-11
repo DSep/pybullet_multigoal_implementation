@@ -102,23 +102,30 @@ class GoalConditionedDDPG(Agent):
                 cycle_success = 0
                 for ep in range(self.training_episodes):
                     num_episodes += 1
-                    ep_return = self._interact(render, test, sleep=sleep)
+                    ep_return, done = self._interact(render, test, sleep=sleep)
                     cycle_return += ep_return
-                    if ep_return > -self.env._max_episode_steps: # FIXME in the case of sparse reward, this is not correct
+                    if ep_return > -self.env._max_episode_steps: # TODO Change to done and test
                         cycle_success += 1
                         num_successful_episodes += 1
-                        # TODO Break early if successful?
                     if wandb.run:
                         wandb.log({
                             'episode_return': ep_return,
                             'successful_episodes_count': num_successful_episodes,
                             'successful_episodes_rate': num_successful_episodes / num_episodes,
-                        })
+                            'episodes_count': num_episodes,
+                            'curr_epoch': epo,
+                            'curr_epoch_cycle': cyc,
+                            'curr_epoch_cycle_episode': ep,
+                        }, step=self.env.total_steps)
                 
                 self.statistic_dict['cycle_return'].append(cycle_return / self.training_episodes)
                 self.statistic_dict['cycle_success_rate'].append(cycle_success / self.training_episodes)
                 if wandb.run:
-                    wandb.log({x: y[-1] for x,y in self.statistic_dict.items() if len(y) > 0})
+                    # wandb.log({x: y[-1] for x,y in self.statistic_dict.items() if len(y) > 0}, step=self.env.total_steps)
+                    wandb.log({
+                        'cycle_return': cycle_return / self.training_episodes,
+                        'cycle_success_rate': cycle_success / self.training_episodes,
+                    }, step=self.env.total_steps)
                 print("Epoch %i" % epo, "Cycle %i" % cyc,
                       "avg. return %0.1f" % (cycle_return / self.training_episodes),
                       "success rate %0.1f" % (cycle_success / self.training_episodes))
@@ -130,28 +137,38 @@ class GoalConditionedDDPG(Agent):
                 test_return = 0
                 test_success = 0
                 for test_ep in range(self.testing_episodes):
-                    ep_test_return = self._interact(render, test=True)
+                    ep_test_return, done = self._interact(render, test=True)
                     test_return += ep_test_return
-                    if ep_test_return > -self.env._max_episode_steps:
+                    if ep_test_return > -self.env._max_episode_steps: # TODO Change to done and test
                         test_success += 1
                 self.statistic_dict['epoch_test_return'].append(test_return / self.testing_episodes)
                 self.statistic_dict['epoch_test_success_rate'].append(test_success / self.testing_episodes)
+                if wandb.run:
+                    wandb.log({
+                        'epoch_test_return': self.statistic_dict['epoch_test_return'][-1],
+                        'epoch_test_success_rate': self.statistic_dict['epoch_test_success_rate'][-1],
+                    }, step=self.env.total_steps)
                 print("Epoch %i" % epo, "test avg. return %0.1f" % (test_return / self.testing_episodes))
 
             if (epo % self.saving_gap == 0) and (epo != 0) and (not test):
                 self._save_network(ep=epo) # NOTE This can be moved into step loop for more specific checkpoints
-            
-            self._save_statistics()
+                self._save_statistics()
 
         if not test:
             print("Finished training")
             print("Saving statistics...")
-            self._plot_statistics(
+            figs, keys = self._plot_statistics(
                 x_labels={
                     'critic_loss': 'Optimization epoch (per ' + str(self.optimizer_steps) + ' steps)',
                     'actor_loss': 'Optimization epoch (per ' + str(self.optimizer_steps) + ' steps)'
                 },
                 save_to_file=True)
+            # TODO Test
+            if wandb.run:
+                for fig, key in zip(figs, keys):
+                    wandb.log({
+                        key + '_plot': fig,
+                    }, step=self.env.total_steps)
         else:
             print("Finished testing")
 
@@ -163,7 +180,8 @@ class GoalConditionedDDPG(Agent):
         ep_return = 0
         new_episode = True
         # start a new episode
-        while not done:
+        step_of_success = 0
+        for _ in range(self.env._max_episode_steps):
             if render:
                 self.env.render()
             action = self._select_action(obs, test=test)
@@ -183,10 +201,22 @@ class GoalConditionedDDPG(Agent):
                                                                   new_obs['achieved_goal']), axis=0))
             obs = new_obs
             new_episode = False
+            # # Break early if successful && test
+            # if test and done:
+            #     break
+            if done and step_of_success == 0:
+                step_of_success = self.env.episode_steps
+        # print("Episode complete! finished on step", self.env.episode_steps, "done", done, "ep_return", ep_return, "info", info)
+        # print("  step_of_success", step_of_success)
+
+        if wandb.run:
+            wandb.log({
+                'step_of_success': step_of_success if step_of_success != 0 else self.env._max_episode_steps,
+            }, step=self.env.total_steps)
         if not test:
             self.normalizer.update_mean()
             self._learn()
-        return ep_return
+        return ep_return, done
 
     def _select_action(self, obs, test=False):
         inputs = np.concatenate((obs['observation'], obs['desired_goal']), axis=0)
@@ -278,3 +308,9 @@ class GoalConditionedDDPG(Agent):
 
         self.statistic_dict['critic_loss'].append(critic_losses / steps)
         self.statistic_dict['actor_loss'].append(actor_losses / steps)
+        if wandb.run:
+            wandb.log({
+                'actor_loss': self.statistic_dict['actor_loss'][-1],
+                'critic_loss': self.statistic_dict['critic_loss'][-1],
+            }, step=self.env.total_steps)
+
