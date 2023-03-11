@@ -111,6 +111,7 @@ class GoalConditionedDDPG(Agent):
                         wandb.log({
                             'episode_return': ep_return,
                             'successful_episodes_count': num_successful_episodes,
+                            'failed_episodes_count': num_episodes - num_successful_episodes,
                             'successful_episodes_rate': num_successful_episodes / num_episodes,
                             'episodes_count': num_episodes,
                             'curr_epoch': epo,
@@ -201,17 +202,19 @@ class GoalConditionedDDPG(Agent):
                                                                   new_obs['achieved_goal']), axis=0))
             obs = new_obs
             new_episode = False
-            # # Break early if successful && test
-            # if test and done:
-            #     break
             if done and step_of_success == 0:
                 step_of_success = self.env.episode_steps
+            # # Break early during testing if goal reached # NOTE: Disabled in case it is tipping over after reaching goal
+            # if test and done:
+            #     break
         # print("Episode complete! finished on step", self.env.episode_steps, "done", done, "ep_return", ep_return, "info", info)
         # print("  step_of_success", step_of_success)
 
         if wandb.run:
             wandb.log({
                 'step_of_success': step_of_success if step_of_success != 0 else self.env._max_episode_steps,
+                'failure': 1 if step_of_success == 0 else 0,
+                'success': 1 if step_of_success != 0 else 0,
             }, step=self.env.total_steps)
         if not test:
             self.normalizer.update_mean()

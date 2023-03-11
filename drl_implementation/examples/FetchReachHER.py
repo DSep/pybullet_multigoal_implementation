@@ -7,9 +7,9 @@ from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
 # import gym
 from drl_implementation import GoalConditionedDDPG
 from seer.train_and_eval_configs.constants import *
-import seer.train_and_eval_configs.rl_training.rl_config_train_basic as config
-from seer.train_and_eval_configs.rl_training.rl_config_train_basic import run_params, env_params, algo_params
-from seer.train_and_eval_configs.rl_training.rl_config_train_basic import wandb_config as rl_wandb_config
+import seer.train_and_eval_configs.rl_eval.rl_config_eval_basic as config
+from seer.train_and_eval_configs.rl_eval.rl_config_eval_basic import run_params, env_params, algo_params
+from seer.train_and_eval_configs.rl_eval.rl_config_eval_basic import wandb_config as rl_wandb_config
 from pathlib import Path
 import argparse
 import wandb
