@@ -7,15 +7,18 @@ from pybullet_multigoal_gym.envs.task_envs.kuka_single_step_envs import \
 # import gym
 from drl_implementation import GoalConditionedDDPG
 from seer.train_and_eval_configs.constants import *
-import seer.train_and_eval_configs.rl_eval.rl_config_eval_basic as config
-from seer.train_and_eval_configs.rl_eval.rl_config_eval_basic import run_params, env_params, algo_params
-from seer.train_and_eval_configs.rl_eval.rl_config_eval_basic import wandb_config as rl_wandb_config
+
 from pathlib import Path
 import argparse
 import wandb
+import importlib
 
 
-def main(use_wandb):
+def main(use_wandb, config):
+    run_params = config.run_params
+    env_params = config.env_params
+    algo_params = config.algo_params
+    rl_wandb_config = config.wandb_config
     seeds = [11]
     seed_returns = []
     seed_success_rates = []
@@ -34,7 +37,17 @@ def main(use_wandb):
 
                 # track hyperparameters and run metadata
                 config=rl_wandb_config
-            )
+            )          
+            # # # define a metric we are interested in the minimum of
+            # wandb.define_metric("actor_loss", summary="min")
+            # # define a metric we are interested in the maximum of
+            # wandb.define_metric("critic_loss", summary="max")
+            # for i in range(10):
+            #     log_dict = {
+            #         "loss": random.uniform(0,1/(i+1)),
+            #         "acc": random.uniform(1/(i+1),1),
+            #     }
+            # wandb.log(log_dict)
 
         env: KukaTipOverEnv = pmg.make_env(**env_params)
         seed_path = path + '/seed'+str(seed)
@@ -84,6 +97,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_wandb', default=False, action='store_true',
                         help='Flag to enable or disable wandb. Default: False.')
+    parser.add_argument("--config", required=True, help="The complete path to the config file to use, for example seer.train_and_eval_configs.rl_eval.rl_config_eval_basic")
     parser = parser.parse_args()
+    
     print("Using wandb?", parser.use_wandb)
-    main(parser.use_wandb)
+    config = importlib.import_module(parser.config)
+    main(parser.use_wandb, config)
