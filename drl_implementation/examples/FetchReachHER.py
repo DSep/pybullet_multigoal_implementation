@@ -14,12 +14,12 @@ import wandb
 import importlib
 
 
-def main(use_wandb, config):
+def main(use_wandb: bool, config):
     run_params = config.run_params
     env_params = config.env_params
     algo_params = config.algo_params
     rl_wandb_config = config.wandb_config
-    seeds = [11]
+    seeds = DEFAULT_SEEDS
     seed_returns = []
     seed_success_rates = []
     path = os.path.dirname(os.path.realpath(__file__))
@@ -33,7 +33,7 @@ def main(use_wandb, config):
                 project='seer',
                 entity='general-team',
                 reinit=True,
-                name=str(Path(config.__file__).stem) + '_' + str(seed),
+                name=str(config.run_params[SCENARIO]),
 
                 # track hyperparameters and run metadata
                 config=rl_wandb_config
@@ -90,16 +90,3 @@ def main(use_wandb, config):
         if wandb.run:
             wandb.finish()
         del env, agent
-
-
-if __name__ == '__main__':
-    # Parse argument to know if we want to use wandb
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--use-wandb', default=False, action='store_true',
-                        help='Flag to enable or disable wandb. Default: False.')
-    parser.add_argument("--config", required=True, help="The complete path to the config file to use, for example seer.train_and_eval_configs.rl_eval.rl_config_eval_basic")
-    parser = parser.parse_args()
-    
-    print("Using wandb?", parser.use_wandb)
-    config = importlib.import_module(parser.config)
-    main(parser.use_wandb, config)
