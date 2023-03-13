@@ -104,7 +104,7 @@ class GoalConditionedDDPG(Agent):
                     num_episodes += 1
                     ep_return, done = self._interact(render, test, sleep=sleep)
                     cycle_return += ep_return
-                    if ep_return > -self.env._max_episode_steps: # TODO Change to done and test
+                    if done:
                         cycle_success += 1
                         num_successful_episodes += 1
                     if wandb.run:
@@ -140,7 +140,7 @@ class GoalConditionedDDPG(Agent):
                 for test_ep in range(self.testing_episodes):
                     ep_test_return, done = self._interact(render, test=True)
                     test_return += ep_test_return
-                    if ep_test_return > -self.env._max_episode_steps: # TODO Change to done and test
+                    if done:
                         test_success += 1
                 self.statistic_dict['epoch_test_return'].append(test_return / self.testing_episodes)
                 self.statistic_dict['epoch_test_success_rate'].append(test_success / self.testing_episodes)
@@ -182,7 +182,7 @@ class GoalConditionedDDPG(Agent):
         new_episode = True
         # start a new episode
         step_of_success = 0
-        for _ in range(self.env._max_episode_steps):
+        for _ in range(self.env._max_episode_steps - 1):
             if render:
                 self.env.render()
             action = self._select_action(obs, test=test)
@@ -212,14 +212,14 @@ class GoalConditionedDDPG(Agent):
 
         if wandb.run:
             wandb.log({
-                'step_of_success': step_of_success if step_of_success != 0 else self.env._max_episode_steps,
+                'step_of_success': step_of_success if step_of_success != 0 else (self.env._max_episode_steps - 1),
                 'failure': 1 if step_of_success == 0 else 0,
                 'success': 1 if step_of_success != 0 else 0,
             }, step=self.env.total_steps)
         if not test:
             self.normalizer.update_mean()
             self._learn()
-        return ep_return, done
+        return ep_return, step_of_success != 0
 
     def _select_action(self, obs, test=False):
         inputs = np.concatenate((obs['observation'], obs['desired_goal']), axis=0)
