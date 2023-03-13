@@ -95,7 +95,7 @@ def main(use_wandb, config):
 if __name__ == '__main__':
     # Parse argument to know if we want to use wandb
     parser = argparse.ArgumentParser()
-    parser.add_argument('--use_wandb', default=False, action='store_true',
+    parser.add_argument('--use-wandb', default=False, action='store_true',
                         help='Flag to enable or disable wandb. Default: False.')
     parser.add_argument("--config", required=True, help="The complete path to the config file to use, for example seer.train_and_eval_configs.rl_eval.rl_config_eval_basic")
     parser = parser.parse_args()
