@@ -168,7 +168,7 @@ class GoalConditionedDDPG(Agent):
             if wandb.run:
                 for fig, key in zip(figs, keys):
                     wandb.log({
-                        key + '_plot': fig,
+                        key + '_plot': wandb.Image(fig),
                     }, step=self.env.total_steps)
         else:
             print("Finished testing")
