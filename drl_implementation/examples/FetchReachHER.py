@@ -20,12 +20,13 @@ def main(use_wandb: bool, config):
     algo_params = config.algo_params
     rl_wandb_config = config.wandb_config
     seeds = DEFAULT_SEEDS
+    load_models_from_seeds = LOAD_MODELS_FROM_SEEDS
     seed_returns = []
     seed_success_rates = []
     path = os.path.dirname(os.path.realpath(__file__))
     path = os.path.join(path, run_params[PATH])
 
-    for seed in seeds:
+    for seed, load_model_from_seed in zip(seeds, load_models_from_seeds):
         if use_wandb:
             # start a new wandb run to track this script
             wandb.init(
@@ -50,11 +51,12 @@ def main(use_wandb: bool, config):
             # wandb.log(log_dict)
 
         env: KukaTipOverEnv = pmg.make_env(**env_params)
-        seed_path = path + '/seed'+str(seed)
+        seed_path = path + '/seed' + str(load_model_from_seed)
         if wandb.run:
             wandb.log({
                 SEED: seed,
                 SEEDS: seeds,
+                LOAD_MODEL_FROM_SEED: load_model_from_seed
             }, step=env.total_steps)
 
         agent = GoalConditionedDDPG(
