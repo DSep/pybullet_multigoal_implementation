@@ -1,45 +1,42 @@
 ## DRL_Implementation
-##### Current status: Forked from development repo
 
 ### Introduction
-- This repository is a pytorch-based implementation of modern DRL algorithms, designed to be reusable for as many 
-Gym-like training environments as possible
+- This repository is a pytorch-based implementation of modern DRL algorithms.
 - The package is under active development, use the latest version with caution
-- It is recommended to use the [released version](https://github.com/IanYangChina/DRL_Implementation/tree/v1.1)
-- Understand more with the [Wiki!](https://github.com/IanYangChina/DRL_Implementation/wiki)
-- Tested environments: Gym, Pybullet-gym, Pybullet-multigoal-gym
-- *My priority is on continuous action algorithms as I'm working on robotics*
+<!-- - Tested environments: Gym, Pybullet-gym, Pybullet-multigoal-gym -->
+- *Priority is on continuous action algorithms*
 
 #### Installation
+Best usage is done via the parent repo: https://github.com/Paralelopipet/SEER. If you want to just try this code, you can, using:
 ```
-git clone https://github.com/IanYangChina/DRL_Implementation.git
+git clone https://github.com/DSep/pybullet_multigoal_implementation.git
 cd DRL_Implementation
 python -m pip install -r requirements.txt
 python -m pip install .
 ```
-[Click here for example code](https://github.com/IanYangChina/DRL_Implementation/tree/master/drl_implementation/examples)
+[Click here for example code](https://github.com/DSep/pybullet_multigoal_implementation/tree/master/drl_implementation/examples)
 , to run the code you will need to install Gym, Pybullet, or pybullet-multigoal-gym. See env installation links below.
-For more use cases, have a look at the [drl_imp_test repo](https://github.com/IanYangChina/drl_imp_test)\
+<!-- For more use cases, have a look at the [drl_imp_test repo](https://github.com/IanYangChina/drl_imp_test)\ -->
 From the project root, run `python drl_implementation/examples/$SCRIPT_NAME.py`
 
 ##### State-based
 - [X] DDPG - Deterministic, Continuous
 - [X] TD3 -Deterministic, Continuous
 - [X] SAC (Adaptive Temperature) - Stochastic, Continuous
-- [ ] D4PG - Deterministic, Continuous ***-only works for torch 1.4.0, fix it later-***
-
+<!-- - [ ] D4PG - Deterministic, Continuous ***-only works for torch 1.4.0, fix it later-*** -->
+<!-- 
 ##### Image-based
 - [ ] DQN - Deterministic, Discrete (LSTM network for Atari) ***-debugging-***
 - [ ] SAC-AE - Continuous ***-to be built-***
-- [ ] DrQ - Continuous ***-debugging-***
+- [ ] DrQ - Continuous ***-debugging-*** -->
 
 ##### Replay buffers
 - [X] Hindsight
 - [X] Prioritised
 
 ##### Tested Environments
-- [X] [Pybullet Gym (Continuous)](https://github.com/bulletphysics/bullet3)
-- [X] [OpenAI Gym Mujoco Robotics Multigoal Environment (Continuous)](https://openai.com/blog/ingredients-for-robotics-research/)
+<!-- - [X] [Pybullet Gym (Continuous)](https://github.com/bulletphysics/bullet3)
+- [X] [OpenAI Gym Mujoco Robotics Multigoal Environment (Continuous)](https://openai.com/blog/ingredients-for-robotics-research/) -->
 - [X] [Pybullet Multigoal Gym](https://github.com/IanYangChina/pybullet_multigoal_gym) (OpenAI Robotics 
 Multigoal Pybullet Migration) (Continuous)
 

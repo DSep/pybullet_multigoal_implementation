@@ -8,9 +8,10 @@ for p in packages:
 
 setup(name='drl-implementation',
       version='1.0.0',
-      description='A collection of deep reinforcement learning algorithms for fast implementation',
+      description='A collection of deep reinforcement learning algorithms for fast implementation. Based on XintongYang\'s implementation.',
       url='https://github.com/DSep/pybullet_multigoal_implementation',
-      author='DSep',
+      author='ddd26, mbg34, nyl25, sd974 and XintongYang',
+      author_email='author@cam.ac.uk',
       packages=packages,
       package_dir={'drl_implementation': 'drl_implementation'},
       package_data={'drl_implementation': [
